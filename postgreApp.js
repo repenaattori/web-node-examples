@@ -22,6 +22,7 @@ app.listen(PORT, function () {
     console.log('Server running on port ' + PORT);
 });
 
+//Creating pg client wit connection info
 const pgclient = new Client({
     host: 'localhost',
     port: 5433,
@@ -31,18 +32,53 @@ const pgclient = new Client({
 });
 
 /**
- * 
+ * Endpoint for getting list of companies
  */
-app.get('/companies',async (req,res) =>{
+app.get('/companies', async (req,res) =>{
     try {
         await pgclient.connect();
-        let rows =  await pgclient.query('SELECT * FROM employee WHERE company_id<$1 AND id>$2', [2,1]);
+        let result =  await pgclient.query('SELECT * FROM company');
+        res.json(result.rows);
+    } catch (err) {
+        console.error(err);
+    }
+});
+
+/**
+ * Endpoint for adding new companies using form data.
+ */
+app.post('/companies', async(req,res) =>{
+    try {
+        await pgclient.connect();
+        
+        let command = 'INSERT INTO company (name) VALUES ';
+
+        
+        for (let i = 1; i <= req.body.length; i++) {
+            if(i!=1)
+                command += ',';
+
+            command += '($' + i + ')'; 
+        }
+
+        res.status(200).send("Companies added!");
+        await pgclient.query(command, req.body);
+    
     } catch (err) {
         console.error(err);
     }
 });
 
 
+// app.get('/companies', async (req,res) =>{
+//     try {
+//         await pgclient.connect();
+//         let result =  await pgclient.query('SELECT * FROM company WHERE company_id<$1 AND id>$2', [2,1]);
+//         res.json(result.rows);
+//     } catch (err) {
+//         console.error(err);
+//     }
+// });
 
 
 async function connect(){
