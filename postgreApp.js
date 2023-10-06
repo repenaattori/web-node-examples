@@ -1,5 +1,5 @@
 require('dotenv').config()
-const {Client} = require('pg')
+const {Pool} = require('pg')
 require('dotenv').config()
 
 const jwt = require('jsonwebtoken');
@@ -22,22 +22,28 @@ app.listen(PORT, function () {
     console.log('Server running on port ' + PORT);
 });
 
-//Creating pg client wit connection info
-const pgclient = new Client({
-    host: 'localhost',
-    port: 5433,
-    database:  'postgres',
-    user: 'postgres',
-    password: ''
+//Creating connection pool
+const pgPool = new Pool({
+    host: process.env.PG_HOST,
+    port: process.env.PG_PORT,
+    database: process.env.PG_DATABASE,
+    user: process.env.PG_UNAME,
+    password: process.env.PG_PW
 });
 
+//Connecting the pool and handling possible connection error
+pgPool.connect((err) => {
+    if(err){
+        console.error(err.message);
+    }
+})
+
 /**
- * Endpoint for getting list of companies
+ * Endpoint for getting list of students
  */
-app.get('/companies', async (req,res) =>{
+app.get('/students', async (req,res) =>{
     try {
-        await pgclient.connect();
-        let result =  await pgclient.query('SELECT * FROM company');
+        let result =  await pgPool.query('SELECT (fname, lname) FROM student');
         res.json(result.rows);
     } catch (err) {
         console.error(err);
@@ -45,42 +51,54 @@ app.get('/companies', async (req,res) =>{
 });
 
 /**
- * Endpoint for adding new companies using form data.
+ * Registers user. Supports urlencoded and multipart
  */
-app.post('/companies', async(req,res) =>{
+app.post('/register', upload.none(), async (req,res) => {
+    const fname = req.body.fname;
+    const lname = req.body.lname;
+    const uname = req.body.username;
+    const pw = req.body.pw;
+
     try {
-        await pgclient.connect();
+        const pwHash = await bcrypt.hash(pw, 10);
+
+        await pgPool.query('INSERT INTO student (fname, lname, username, pw) VALUES ($1,$2,$3,$4)',[fname,lname,uname,pwHash]);
+
+        const token = jwt.sign({username: uname}, process.env.JWT_SECRET_KEY);
+        res.status(200).json({jwtToken: token});
         
-        let command = 'INSERT INTO company (name) VALUES ';
 
-        
-        for (let i = 1; i <= req.body.length; i++) {
-            if(i!=1)
-                command += ',';
-
-            command += '($' + i + ')'; 
-        }
-
-        await pgclient.query(command, req.body);
-        res.status(200).send("Companies added!");
-    
     } catch (err) {
-        console.error(err);
+        res.status(500).json({ error: err });
     }
 });
 
+app.post('/login', upload.none(), async (req, res) => {
+    const uname = req.body.username;
+    const pw = req.body.pw;
 
-
-async function connect(){
     try {
-        await pgclient.connect();
-        console.log('Valmista');
-        let tulos =  await pgclient.query('SELECT * FROM employee WHERE company_id<$1 AND id>$2', [2,1]);
-        console.log(tulos.rows);
+
+        const result = await pgPool.query('SELECT pw FROM student WHERE username=$1', [uname]);
+        
+        if(result.rows.length > 0){
+            const isAuth = await bcrypt.compare(pw, result.rows[0].pw);
+            if(isAuth){
+                const token = jwt.sign({username: uname}, process.env.JWT_SECRET_KEY);
+                res.status(200).json({jwtToken: token});
+            }else{
+                res.status(401).end('User not authorized');
+            }
+        }else{
+            res.status(404).send('User not found');
+        }
+
     } catch (err) {
-        console.error(err);
+        console.log(err);
+        res.status(500).json({ error: err.message });
     }
-}
+});
+
 
 
 
