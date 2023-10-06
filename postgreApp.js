@@ -61,24 +61,14 @@ app.post('/companies', async(req,res) =>{
             command += '($' + i + ')'; 
         }
 
-        res.status(200).send("Companies added!");
         await pgclient.query(command, req.body);
+        res.status(200).send("Companies added!");
     
     } catch (err) {
         console.error(err);
     }
 });
 
-
-// app.get('/companies', async (req,res) =>{
-//     try {
-//         await pgclient.connect();
-//         let result =  await pgclient.query('SELECT * FROM company WHERE company_id<$1 AND id>$2', [2,1]);
-//         res.json(result.rows);
-//     } catch (err) {
-//         console.error(err);
-//     }
-// });
 
 
 async function connect(){
