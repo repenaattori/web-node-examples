@@ -43,7 +43,7 @@ pgPool.connect((err) => {
  */
 app.get('/students', async (req,res) =>{
     try {
-        let result =  await pgPool.query('SELECT (fname, lname) FROM student');
+        let result =  await pgPool.query('SELECT fname, lname FROM student');
         res.json(result.rows);
     } catch (err) {
         console.error(err);
@@ -51,7 +51,22 @@ app.get('/students', async (req,res) =>{
 });
 
 /**
- * Registers user. Supports urlencoded and multipart
+ * Dummy endpoint for using path parameter like localhost:3001/1
+ */
+app.get('/student/:id', async (req,res)=>{
+    res.send(req.params.id);
+});
+
+/**
+ * Dummy endpoint for using query parameters like localhost:3001?id=1
+ */
+app.get('/student', async (req,res)=>{
+    res.send(req.query.id);
+});
+
+/**
+ * Registers student. Supports urlencoded, multipart and json parameters.
+ * Creates also JTW token (registered user is automatically logged)
  */
 app.post('/register', upload.none(), async (req,res) => {
     const fname = req.body.fname;
@@ -73,6 +88,9 @@ app.post('/register', upload.none(), async (req,res) => {
     }
 });
 
+/**
+ * Login student and return JWT token as response. Token contains username.
+ */
 app.post('/login', upload.none(), async (req, res) => {
     const uname = req.body.username;
     const pw = req.body.pw;
@@ -99,6 +117,23 @@ app.post('/login', upload.none(), async (req, res) => {
     }
 });
 
+/**
+ * Endpoint for testing if the token is valid (e.g. getting personal data for user)
+ */
+app.get('/testtoken', async (req,res)=>{
+
+     try{
+        //Get the bearer token from authorization header
+        const token = req.headers.authorization.split(' ')[1];
+
+        //Verify the token. Verified token contains username
+        const username = jwt.verify(token, process.env.JWT_SECRET_KEY).username;
+        res.status(200).send('Token is valid for user ' + username);
+     }catch(err){
+        res.status(401).json({error: err.message});
+     }
+});
 
 
-
+//For mocha/chai testing
+module.exports = app;

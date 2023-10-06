@@ -14,10 +14,10 @@ chai.use(chaiHttp);
 /**
  * Example of using chai to test REST endpoint
  */
-describe('/GET products', ()=>{
-    it('it should get all the products', (done) => {
+describe('/GET students', ()=>{
+    it('it should get all the students', (done) => {
         chai.request(server)
-            .get('/products')
+            .get('/students')
             .end((err, res) => {
                 res.should.have.status(200);
                 res.body.should.be.a('array');
