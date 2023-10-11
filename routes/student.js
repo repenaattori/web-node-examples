@@ -1,39 +1,41 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
-const {getStudent} = require('../database_tools/student_db')
-
+const {getStudentInfo} = require('../database_tools/student_db')
+const  {auth} = require('../auth/auth');
 
 //Student endpoints return all students without any id parameter
 
 /**
- * Endpoint for using query parameter like localhost:300?username=repe
+ * Endpoint for testing if the token is valid (e.g. getting private data for user)
+ * Auth middleware checks the token and calls this if the user is authorized.
  */
-router.get('/', async (req,res)=>{
+router.get('/private', auth, async (req,res)=>{
 
     try{
-        const result = await getStudent(req.query.username);
-        res.status(result.code).json(result.content);
-    }catch(error){
-        res.status(500).json(error);
-    }
-});
-
-/**
- * Endpoint for testing if the token is valid (e.g. getting personal data for user)
- */
-router.get('/personal', async (req,res)=>{
-
-    try{
-       //Get the bearer token from authorization header
-       const token = req.headers.authorization.split(' ')[1];
-       //Verify the token. Verified token contains username
-       const username = jwt.verify(token, process.env.JWT_SECRET_KEY).username;
-       res.status(200).send('Token is valid for user ' + username);
+        const student = getStudentInfo(res.locals.username);
+        if(!student){
+            res.status(404).json({error: 'User not found!'});
+        }
+        res.status(200).json(userdata);
     }catch(err){
-       res.status(401).json({error: err.message});
+       res.status(505).json({error: err.message});
     }
-
 });
+
+
+// /**
+//  * Endpoint for using query parameter like localhost:300?username=repe
+//  */
+// router.get('/',async (req,res)=>{
+
+//     try{
+//         const result = await getStudent(req.query.username);
+//         res.status(result.code).json(result.content);
+//     }catch(error){
+//         res.status(500).json(error);
+//     }
+// });
+
 
 /**
  * Endpoint for using path parameter like localhost:3001/repe

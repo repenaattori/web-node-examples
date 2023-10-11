@@ -1,30 +1,29 @@
 const jwt = require('jsonwebtoken');
 const pgPool = require('./pg_connection');
-const bcrypt = require('bcrypt');
 
-async function register(fname,lname,uname,pw){
-    const pwHash = await bcrypt.hash(pw, 10);
-    await pgPool.query('INSERT INTO student (fname, lname, username, pw) VALUES ($1,$2,$3,$4)',[fname,lname,uname,pwHash]);
-    const token = jwt.sign({username: uname}, process.env.JWT_SECRET_KEY);
-    return token;
+const sql = {
+    GET_PW: 'SELECT pw FROM student WHERE username=$1',
+    INSERT_STUDENT: 'INSERT INTO student (fname, lname, username, pw) VALUES ($1,$2,$3,$4)'
 }
 
-async function login(uname, pw){
+/**
+ * Registers new user
+ */
+async function register(fname,lname,username, pw){
+    return await pgPool.query(sql.INSERT_STUDENT, [fname,lname,username,pw]);
+}
 
-    const result = await pgPool.query('SELECT pw FROM student WHERE username=$1', [uname]);
-    
-    if(result.rows.length > 0){
-        const isAuth = await bcrypt.compare(pw, result.rows[0].pw);
-        if(isAuth){
-            const token = jwt.sign({username: uname}, process.env.JWT_SECRET_KEY);
-            return {code: 202, content:{jwtToken: token}};
-        }else{
-            return {code: 401, content:{msg: 'User not authorized'}};
-        }
+/**
+ * Gets database password hash by username
+ */
+async function getPw(username){
+    const result = await pgPool.query(sql.GET_PW, [username]);
+
+    if(result.rows.length>0){
+       return result.rows[0].pw;
     }else{
-        return {code: 404, content:{msg: 'User not found'}};
+       return null;
     }
 }
 
-
-module.exports = {register, login};
+module.exports = {register, getPw};

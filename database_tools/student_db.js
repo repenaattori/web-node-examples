@@ -1,17 +1,23 @@
 const pgPool = require('./pg_connection');
 
-
-async function getStudent(username){
-
-    if(username){
-        let result =  await pgPool.query('SELECT fname, lname FROM student WHERE username=$1',[username]);
-        return result.rows[0] ? 
-            {code: 202, content: result.rows[0]} 
-            : {code: 404, content: {error: 'Student not found by username'}} ;
-    }
-    
-    let result =  await pgPool.query('SELECT fname, lname FROM student');
-    return {code: 202, content: result.rows}
+const sql = {
+    GET_STUDENT: 'SELECT fname, lname FROM student WHERE username=$1'
 }
 
-module.exports = {getStudent}
+/**
+ * Gets basic student information.
+ */
+async function getStudentInfo(username){
+
+    if(username){
+        let result =  await pgPool.query(sql.GET_STUDENT,[username]);
+        if(result.rowCount > 0){
+            const student = result.rows[0];
+            return {fname: student.fname, lname: student.lname};    
+        }
+    }
+    
+    return null;
+}
+
+module.exports = {getStudentInfo}
