@@ -8,7 +8,7 @@ const {getStudent, addNote} = require('../database_tools/student_db')
 /**
  * Endpoint for getting student/students using query parameter like localhost:300?username=repe
  */
-router.get('/', async (req,res)=>{
+router.get('/private', auth, async (req,res)=>{
 
     try{
         const result = await getStudent(req.query.username);
@@ -31,7 +31,7 @@ router.get('/personal', async (req,res)=>{
        const username = jwt.verify(token, process.env.JWT_SECRET_KEY).username;
        res.status(200).send('Token is valid for user ' + username);
     }catch(err){
-       res.status(401).json({error: err.message});
+       res.status(505).json({error: err.message});
     }
 });
 

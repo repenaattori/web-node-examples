@@ -26,5 +26,4 @@ async function getPw(username){
     }
 }
 
-
 module.exports = {register, getPw};
