@@ -1,12 +1,12 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
-const {getStudent} = require('../database_tools/student_db')
+const {getStudent, addNote} = require('../database_tools/student_db')
 
 
 //Student endpoints return all students without any id parameter
 
 /**
- * Endpoint for using query parameter like localhost:300?username=repe
+ * Endpoint for getting student/students using query parameter like localhost:300?username=repe
  */
 router.get('/', async (req,res)=>{
 
@@ -14,6 +14,7 @@ router.get('/', async (req,res)=>{
         const result = await getStudent(req.query.username);
         res.status(result.code).json(result.content);
     }catch(error){
+        console.log(error);
         res.status(500).json(error);
     }
 });
@@ -32,8 +33,25 @@ router.get('/personal', async (req,res)=>{
     }catch(err){
        res.status(401).json({error: err.message});
     }
-
 });
+
+
+/**
+ * Adds new note for the student {username: xxx, message: xxx}
+ */
+router.post('/note', async (req,res)=>{
+    try {
+        const uname = await addNote(req.body.username, req.body.message);
+        if(uname){
+            res.status(200).send('Note added for user ' + uname);
+        }else{
+            res.status(404).send('User ' + req.body.username + ' not found!');    
+        }
+    } catch (error) {
+        res.status(401).json({error: error.message});
+    }
+});
+
 
 /**
  * Endpoint for using path parameter like localhost:3001/repe
