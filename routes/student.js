@@ -1,40 +1,56 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
-const {getStudentInfo} = require('../database_tools/student_db')
-const  {auth} = require('../auth/auth');
+const {getStudent, addNote} = require('../database_tools/student_db')
+
 
 //Student endpoints return all students without any id parameter
 
 /**
- * Endpoint for testing if the token is valid (e.g. getting private data for user)
- * Auth middleware checks the token and calls this if the user is authorized.
+ * Endpoint for getting student/students using query parameter like localhost:300?username=repe
  */
 router.get('/private', auth, async (req,res)=>{
 
     try{
-        const student = getStudentInfo(res.locals.username);
-        if(!student){
-            res.status(404).json({error: 'User not found!'});
-        }
-        res.status(200).json(userdata);
+        const result = await getStudent(req.query.username);
+        res.status(result.code).json(result.content);
+    }catch(error){
+        console.log(error);
+        res.status(500).json(error);
+    }
+});
+
+/**
+ * Endpoint for testing if the token is valid (e.g. getting personal data for user)
+ */
+router.get('/personal', async (req,res)=>{
+
+    try{
+       //Get the bearer token from authorization header
+       const token = req.headers.authorization.split(' ')[1];
+       //Verify the token. Verified token contains username
+       const username = jwt.verify(token, process.env.JWT_SECRET_KEY).username;
+       res.status(200).send('Token is valid for user ' + username);
     }catch(err){
        res.status(505).json({error: err.message});
     }
 });
 
 
-// /**
-//  * Endpoint for using query parameter like localhost:300?username=repe
-//  */
-// router.get('/',async (req,res)=>{
-
-//     try{
-//         const result = await getStudent(req.query.username);
-//         res.status(result.code).json(result.content);
-//     }catch(error){
-//         res.status(500).json(error);
-//     }
-// });
+/**
+ * Adds new note for the student {username: xxx, message: xxx}
+ */
+router.post('/note', async (req,res)=>{
+    try {
+        const uname = await addNote(req.body.username, req.body.message);
+        if(uname){
+            res.status(200).send('Note added for user ' + uname);
+        }else{
+            res.status(404).send('User ' + req.body.username + ' not found!');    
+        }
+    } catch (error) {
+        res.status(401).json({error: error.message});
+    }
+});
 
 
 /**

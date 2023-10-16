@@ -1,16 +1,16 @@
-const jwt = require('jsonwebtoken');
 const pgPool = require('./pg_connection');
 
 const sql = {
-    GET_PW: 'SELECT pw FROM student WHERE username=$1',
-    INSERT_STUDENT: 'INSERT INTO student (fname, lname, username, pw) VALUES ($1,$2,$3,$4)'
+    REGISTER: 'INSERT INTO student (fname, lname, username, pw) VALUES ($1,$2,$3,$4)',
+    GET_PW: 'SELECT pw FROM student WHERE username=$1'
 }
 
 /**
- * Registers new user
+ * Register new user
  */
-async function register(fname,lname,username, pw){
-    return await pgPool.query(sql.INSERT_STUDENT, [fname,lname,username,pw]);
+async function register(fname,lname,uname,pw){
+    const pwHash = await bcrypt.hash(pw, 10);
+    await pgPool.query(sql.REGISTER,[fname,lname,uname,pwHash]);
 }
 
 /**
