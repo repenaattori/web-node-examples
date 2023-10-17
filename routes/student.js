@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
-const {getStudent, addNote} = require('../database_tools/student_db')
+const {getStudent, addNote} = require('../database_tools/student_db');
+const {auth} = require('../auth/auth');
 
 
 //Student endpoints return all students without any id parameter
@@ -8,7 +9,7 @@ const {getStudent, addNote} = require('../database_tools/student_db')
 /**
  * Endpoint for getting student/students using query parameter like localhost:300?username=repe
  */
-router.get('/private', auth, async (req,res)=>{
+router.get('/', async (req,res)=>{
 
     try{
         const result = await getStudent(req.query.username);
