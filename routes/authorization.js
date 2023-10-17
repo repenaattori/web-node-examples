@@ -1,5 +1,5 @@
+require('dotenv').config()
 const router = require('express').Router();
-const {register, getPw} = require('../database_tools/auth_db');
 const {register, getPw} = require('../database_tools/auth_db');
 const multer = require('multer');
 const upload = multer({ dest: "uploads/" });
