@@ -1,7 +1,10 @@
+require('dotenv').config()
 const router = require('express').Router();
 const jwt = require('jsonwebtoken');
 const {getStudent, addNote} = require('../database_tools/student_db');
 const {auth} = require('../auth/auth');
+const {getStudent, addNote} = require('../database_tools/student_db')
+const {auth} = require('../auth/auth')
 
 
 //Student endpoints return all students without any id parameter
