@@ -5,7 +5,7 @@ CREATE TABLE student(
     pw VARCHAR(255)
 );
 CREATE TABLE note(  
-    id SERIAL NOT NULL PRIMARY KEY,
+    id int GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     msg VARCHAR(255),
     student_uname VARCHAR(255) REFERENCES student(username)
 );
