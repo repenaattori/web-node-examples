@@ -1,5 +1,6 @@
 const pgPool = require('./pg_connection');
 
+
 const sql = {
     REGISTER: 'INSERT INTO student (fname, lname, username, pw) VALUES ($1,$2,$3,$4)',
     GET_PW: 'SELECT pw FROM student WHERE username=$1'
@@ -8,8 +9,7 @@ const sql = {
 /**
  * Register new user
  */
-async function register(fname,lname,uname,pw){
-    const pwHash = await bcrypt.hash(pw, 10);
+async function register(fname,lname,uname,pwHash){
     await pgPool.query(sql.REGISTER,[fname,lname,uname,pwHash]);
 }
 

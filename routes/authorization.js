@@ -6,6 +6,7 @@ const upload = multer({ dest: "uploads/" });
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 
+
 /**
  * Registers student. Supports urlencoded, multipart and json parameters.
  * Creates also JTW token (registered user is automatically logged)
@@ -13,11 +14,12 @@ const bcrypt = require('bcrypt');
 router.post('/register', upload.none(), async (req,res) => {
     const body =  req.body;
     try {
-        await register(body.fname, body.lname, body.username, body.pq);
+        const pwHash = await bcrypt.hash(body.pw, 10);
+        await register(body.fname, body.lname, body.username, pwHash);
         const token = jwt.sign({username: body.username}, process.env.JWT_SECRET_KEY);
         res.status(200).json({jwtToken: token});
     } catch (err) {
-        res.status(500).json({ error: err });
+        res.status(500).json({ error: err.message });
     }
 });
 

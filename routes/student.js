@@ -1,10 +1,7 @@
 require('dotenv').config()
 const router = require('express').Router();
-const jwt = require('jsonwebtoken');
 const {getStudent, addNote} = require('../database_tools/student_db');
 const {auth} = require('../auth/auth');
-const {getStudent, addNote} = require('../database_tools/student_db')
-const {auth} = require('../auth/auth')
 
 
 //Student endpoints return all students without any id parameter
@@ -24,15 +21,11 @@ router.get('/', async (req,res)=>{
 });
 
 /**
- * Endpoint for testing if the token is valid (e.g. getting personal data for user)
+ * Endpoint for getting personal data for user. Token is checked in the auth middleware.
  */
-router.get('/personal', async (req,res)=>{
-
+router.get('/personal', auth, async (req,res)=>{
     try{
-       //Get the bearer token from authorization header
-       const token = req.headers.authorization.split(' ')[1];
-       //Verify the token. Verified token contains username
-       const username = jwt.verify(token, process.env.JWT_SECRET_KEY).username;
+       const username = res.locals.username;
        res.status(200).send('Token is valid for user ' + username);
     }catch(err){
        res.status(505).json({error: err.message});

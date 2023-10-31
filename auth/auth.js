@@ -13,7 +13,7 @@ function auth(req,res,next){
     //res.locals stores the username during the life of the request
     //next() directs to the next middleware in stack.
     try{
-        const username = jwt.verify(token, process.env.JWT_KEY).username;
+        const username = jwt.verify(token, process.env.JWT_SECRET_KEY).username;
         res.locals.username = username;
         next();
     }catch(err){
