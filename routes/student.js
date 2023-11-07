@@ -26,7 +26,7 @@ router.get('/', async (req,res)=>{
 router.get('/personal', auth, async (req,res)=>{
     try{
        const username = res.locals.username;
-       res.status(200).send('Token is valid for user ' + username);
+       res.status(200).json({username: username, personalData: "Some personal data"});
     }catch(err){
        res.status(505).json({error: err.message});
     }
