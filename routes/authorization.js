@@ -3,8 +3,8 @@ const router = require('express').Router();
 const {register, getPw} = require('../database_tools/auth_db');
 const multer = require('multer');
 const upload = multer({ dest: "uploads/" });
-const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const { createToken } = require('../auth/auth');
 
 
 /**
@@ -12,11 +12,15 @@ const bcrypt = require('bcrypt');
  * Creates also JTW token (registered user is automatically logged)
  */
 router.post('/register', upload.none(), async (req,res) => {
-    const body =  req.body;
+    const fname = body.fname;
+    const lname = body.lname;
+    const username = body.username;
+    const pw = body.pw;
+
     try {
-        const pwHash = await bcrypt.hash(body.pw, 10);
-        await register(body.fname, body.lname, body.username, pwHash);
-        const token = jwt.sign({username: body.username}, process.env.JWT_SECRET_KEY);
+        const pwHash = await bcrypt.hash(pw, 10);
+        await register(fname, lname, username, pwHash);
+        const token = createToken(username);
         res.status(200).json({jwtToken: token});
     } catch (err) {
         res.status(500).json({ error: err.message });
@@ -37,7 +41,7 @@ router.post('/login', upload.none(), async (req, res) => {
         if(db_pw){
             const isAuth = await bcrypt.compare(pw, db_pw);
             if(isAuth){
-                const token = jwt.sign({username: uname}, process.env.JWT_SECRET_KEY);
+                const token = createToken(uname);
                 res.status(200).json({jwtToken: token});
             }else{
                 res.status(401).end('User not authorized');

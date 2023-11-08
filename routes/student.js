@@ -54,17 +54,4 @@ router.post('/note', async (req,res)=>{
 });
 
 
-/**
- * Endpoint for using path parameter like localhost:3001/repe
- */
-// router.get('/student/:username', async (req,res)=>{
-//     try{
-//         const result = await getStudent(req.params.username);
-//         res.status(result.code).json(result.content);
-//     }catch(error){
-//         res.status(500).json(error);
-//     }
-
-// });
-
 module.exports = router;
