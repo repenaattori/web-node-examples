@@ -14,13 +14,10 @@ async function getStudent(username){
 
     if(username){
         let result =  await pgPool.query(sql.CHECK_STUDENT,[username]);
-        return result.rowCount > 0 ? 
-            {code: 202, content: result.rows[0]} 
-            : {code: 404, content: {error: 'Student not found by username'}} ;
+        return result.rowCount > 0 ? result.rows : null;
     }
-    
     let result =  await pgPool.query(sql.GET_ALL_STUDENTS);
-    return {code: 202, content: result.rows}
+    return result.rows;
 }
 
 /**

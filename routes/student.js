@@ -4,16 +4,20 @@ const {getStudent, addNote} = require('../database_tools/student_db');
 const {auth} = require('../auth/auth');
 
 
-//Student endpoints return all students without any id parameter
-
 /**
  * Endpoint for getting student/students using query parameter like localhost:300?username=repe
+ * Returns all students if no username defined
  */
 router.get('/', async (req,res)=>{
 
     try{
-        const result = await getStudent(req.query.username);
-        res.status(result.code).json(result.content);
+        const students = await getStudent(req.query.username);
+        if(students){
+            res.status(200).json( students.length === 1 ? students[0] : students )
+        }else{
+            res.status(404).json({error: "Student not found"});
+        }
+      
     }catch(error){
         console.log(error);
         res.status(500).json(error);
