@@ -25,6 +25,6 @@ effect(()=>{
             .then(resp => userInfo.value = resp.data)
             .catch(error => console.log(error.message))
     }else{
-        userInfo.value = '';
+        userInfo.value = null;
     }
 });

@@ -9,8 +9,8 @@ export default function Students(){
      //Retrieving data when mounting this component
      useEffect(()=>{
         axios.get('/student')
-        .then(resp =>{setStudents(resp.data)})
-        .catch(error => console.log(error.message))
+            .then(resp =>{setStudents(resp.data)})
+            .catch(error => console.log(error.message));
     },[]);
 
     return(
