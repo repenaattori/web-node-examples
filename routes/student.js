@@ -13,7 +13,7 @@ router.get('/', async (req,res)=>{
     try{
         const students = await getStudent(req.query.username);
         if(students){
-            res.status(200).json( students.length === 1 ? students[0] : students )
+            res.status(200).json( students );
         }else{
             res.status(404).json({error: "Student not found"});
         }

@@ -25,7 +25,7 @@ function auth(req,res,next){
  * Tool function that creates a JWT token containing the username. 
  */
 function createToken(username){
-    return jwt.sign({username: username}, process.env.JWT_KEY);
+    return jwt.sign({username: username}, process.env.JWT_SECRET_KEY);
 }
 
 
