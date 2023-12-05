@@ -20,10 +20,10 @@ async function getXml(){
 }
 
 
-// Callback version
+//Callback version
 // axios.get('https://www.finnkino.fi/xml/NewsCategories/')
 //     .then( res=> {
-//         parseString(res.data, (err, result) => {
+//         xml2js.parseString(res.data, (err, result) => {
 //             result.NewsCategories.NewsArticleCategory.forEach(e => {
 //                 console.log(e.Name[0]);
 //             });
