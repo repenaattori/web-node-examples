@@ -1,0 +1,124 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 2,
+    "passes": 1,
+    "pending": 0,
+    "failures": 1,
+    "start": "2024-02-14T20:00:18.496Z",
+    "end": "2024-02-14T20:00:18.539Z",
+    "duration": 43,
+    "testsRegistered": 2,
+    "passPercent": 50,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "461284aa-3c7c-47a5-97b5-2dc5948ad74d",
+      "title": "",
+      "fullFile": "C:\\Users\\reimarii\\Documents\\node\\demo_testaus\\test\\test.js",
+      "file": "\\test\\test.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "4f9d6842-4eea-44e9-85d8-c10b657a2227",
+          "title": "/GET root",
+          "fullFile": "C:\\Users\\reimarii\\Documents\\node\\demo_testaus\\test\\test.js",
+          "file": "\\test\\test.js",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "Correct request",
+              "fullTitle": "/GET root Correct request",
+              "timedOut": false,
+              "duration": 29,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "chai.request(server)\n    .get('/')\n    .end((err,res)=>{\n        chai.expect(err).to.be.null;\n        chai.expect(res).to.have.status(200);\n        chai.expect(res.body).to.have.property('token', '123abc');\n        done();\n    })",
+              "err": {},
+              "uuid": "f0376c45-9eae-4b6d-b9e2-34ff127d80a5",
+              "parentUUID": "4f9d6842-4eea-44e9-85d8-c10b657a2227",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "Incorrect request",
+              "fullTitle": "/GET root Incorrect request",
+              "timedOut": false,
+              "duration": 5,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "chai.request(server)\n    .get('/')\n    .end((err,res)=>{\n        chai.expect(err).to.be.null;\n        chai.expect(res).to.have.status(200);\n        chai.expect(res.body).to.have.property('extradata', 'something');\n        done();\n    })",
+              "err": {
+                "message": "AssertionError: expected { token: '123abc' } to have property 'extradata'",
+                "estack": "AssertionError: expected { token: '123abc' } to have property 'extradata'\n    at C:\\Users\\reimarii\\Documents\\node\\demo_testaus\\test\\test.js:27:47\n    at Request.callback (node_modules\\superagent\\lib\\node\\index.js:857:12)\n    at C:\\Users\\reimarii\\Documents\\node\\demo_testaus\\node_modules\\superagent\\lib\\node\\index.js:1070:18\n    at IncomingMessage.<anonymous> (node_modules\\superagent\\lib\\node\\parsers\\json.js:21:7)\n    at IncomingMessage.emit (node:events:526:35)\n    at endReadableNT (node:internal/streams/readable:1408:12)\n    at process.processTicksAndRejections (node:internal/process/task_queues:82:21)",
+                "diff": null
+              },
+              "uuid": "dc31e416-32f2-4ad3-b20d-202993013e5c",
+              "parentUUID": "4f9d6842-4eea-44e9-85d8-c10b657a2227",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "f0376c45-9eae-4b6d-b9e2-34ff127d80a5"
+          ],
+          "failures": [
+            "dc31e416-32f2-4ad3-b20d-202993013e5c"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 34,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "10.3.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": true,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.3"
+    },
+    "marge": {
+      "options": null,
+      "version": "6.2.0"
+    }
+  }
+}
